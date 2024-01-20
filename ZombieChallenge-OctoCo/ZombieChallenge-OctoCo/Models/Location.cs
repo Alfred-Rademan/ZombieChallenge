@@ -15,7 +15,7 @@ public partial class Location
     public decimal Longitude { get; set; }
 
     [Required]
-    public int SurvivorsId { get; set; }
+    public int? SurvivorsId { get; set; }
 
     public virtual Survivor? Survivors { get; set; }
 }

@@ -89,12 +89,45 @@ namespace ZombieChallenge_OctoCo.Controllers
           {
               return Problem("Entity set 'ZombieSurvivorsContext.Survivors'  is null.");
           }
-
+            //split the object into three objects, survivor, location and inventory items
+            Survivor insertSurvivor = survivor;
+            Location insertLocation = survivor.Locations.FirstOrDefault();
+            List<InventoryItem> insertInventoryItems = survivor.InventoryItems.ToList();
+          
           //remove location and inventory items from the request
-            survivor.Locations = null;
-            survivor.InventoryItems = null;
-            _context.Survivors.Add(survivor);
+            insertSurvivor.Locations = null;
+            insertSurvivor.InventoryItems = null;
+
+            //add the survivor to the database
+            _context.Survivors.Add(insertSurvivor);
             await _context.SaveChangesAsync();
+
+            //add the location to the database
+            if (insertLocation != null)
+            {
+                insertLocation.SurvivorsId = insertSurvivor.Id;
+                _context.Locations.Add(insertLocation);
+            }
+            else
+            {
+                return BadRequest("Survivor does not have a location");
+            }
+
+            //add the inventory items to the database
+            foreach (var item in insertInventoryItems)
+            {
+                //change the survivor id to new id of the saved survivor
+                if (item.SurvivorsId != null)
+                {
+                    item.SurvivorsId = insertSurvivor.Id;
+                    _context.InventoryItems.Add(item);
+                }
+                else
+                {
+                    return BadRequest("Inventory item does not have a survivor id");
+                }
+                
+            }
 
             return CreatedAtAction("GetSurvivor", new { id = survivor.Id }, survivor);
         }

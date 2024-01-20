@@ -16,7 +16,7 @@ public partial class InventoryItem
     public int Amount { get; set; }
 
     [Required]
-    public int SurvivorsId { get; set; }
+    public int? SurvivorsId { get; set; }
 
     public virtual Survivor? Survivors { get; set; }
 }
