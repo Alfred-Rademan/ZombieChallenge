@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using ZombieChallenge_OctoCo.Models.Base;
 
 namespace ZombieChallenge_OctoCo.Models;
 

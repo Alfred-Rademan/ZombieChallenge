@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ZombieChallenge_OctoCo.Models;
+namespace ZombieChallenge_OctoCo.Models.Base;
 
 public partial class InventoryItem
 {
-    
+
     public int Id { get; set; }
 
     [Required]

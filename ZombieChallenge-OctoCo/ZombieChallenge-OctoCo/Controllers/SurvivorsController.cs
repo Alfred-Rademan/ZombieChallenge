@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZombieChallenge_OctoCo.Models;
+using ZombieChallenge_OctoCo.Models.Base;
 
 namespace ZombieChallenge_OctoCo.Controllers
 {
@@ -83,7 +84,7 @@ namespace ZombieChallenge_OctoCo.Controllers
         // POST: api/Survivors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Survivor>> PostSurvivor(Survivor survivor)
+        public async Task<ActionResult<Survivor>> PostSurvivor([Bind("Survivor.CreationBindings")]Survivor survivor)
         {
           if (_context.Survivors == null)
           {
@@ -112,7 +113,7 @@ namespace ZombieChallenge_OctoCo.Controllers
             {
                 return BadRequest("Survivor does not have a location");
             }
-
+            
             //add the inventory items to the database
             foreach (var item in insertInventoryItems)
             {

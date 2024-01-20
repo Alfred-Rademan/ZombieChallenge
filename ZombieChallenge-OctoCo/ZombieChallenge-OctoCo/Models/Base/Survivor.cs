@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using ZombieChallenge_OctoCo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace ZombieChallenge_OctoCo.Models;
+namespace ZombieChallenge_OctoCo.Models.Base;
 
 public partial class Survivor
 {
@@ -24,4 +23,6 @@ public partial class Survivor
     public virtual ICollection<InventoryItem>? InventoryItems { get; set; } = new List<InventoryItem>();
 
     public virtual ICollection<Location>? Locations { get; set; } = new List<Location>();
+
+    public string CreationBindings = "Name,Age,Gender,Locations.Latitude,Location.Longitude,InventoryItems.Item, Inventory.Amount";
 }
