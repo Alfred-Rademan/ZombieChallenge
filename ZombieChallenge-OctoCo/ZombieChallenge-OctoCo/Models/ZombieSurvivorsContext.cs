@@ -85,8 +85,7 @@ public partial class ZombieSurvivorsContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Age).HasColumnName("age");
-            entity.Property(e => e.InventoryId).HasColumnName("inventory_id");
-            entity.Property(e => e.LocationId).HasColumnName("location_id");
+            entity.Property(e => e.Gender).HasColumnName("gender");
             entity.Property(e => e.Name)
                 .HasMaxLength(128)
                 .HasColumnName("name");

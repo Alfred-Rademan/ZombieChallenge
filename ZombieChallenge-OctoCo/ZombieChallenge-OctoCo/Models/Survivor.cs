@@ -1,21 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using ZombieChallenge_OctoCo.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ZombieChallenge_OctoCo.Models;
 
 public partial class Survivor
 {
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
+    [Required]
     public string Name { get; set; } = null!;
 
+    [Required]
     public int Age { get; set; }
 
-    public int LocationId { get; set; }
+    [Required]
+    public string? Gender { get; set; }
 
-    public int InventoryId { get; set; }
+    public virtual ICollection<InventoryItem>? InventoryItems { get; set; } = new List<InventoryItem>();
 
-    public virtual ICollection<InventoryItem> InventoryItems { get; set; } = new List<InventoryItem>();
-
-    public virtual ICollection<Location> Locations { get; set; } = new List<Location>();
+    public virtual ICollection<Location>? Locations { get; set; } = new List<Location>();
 }
