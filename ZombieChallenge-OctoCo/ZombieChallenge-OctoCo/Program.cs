@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using System.Text.Json.Serialization;
 using ZombieChallenge_OctoCo.Models;
+using ZombieChallenge_OctoCo.Services.InventoryItemsService;
+using ZombieChallenge_OctoCo.Services.LocationService;
+using ZombieChallenge_OctoCo.Services.SurvivorService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<ZombieSurvivorsContext>();
+builder.Services.AddScoped<ISurvivorService, SurvivorService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

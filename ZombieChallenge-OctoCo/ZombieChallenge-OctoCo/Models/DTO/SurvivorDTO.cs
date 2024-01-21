@@ -14,8 +14,8 @@ namespace ZombieChallenge_OctoCo.Models.DTO
         [Required]
         public string? Gender { get; set; }
 
-        public virtual ICollection<InventoryItemDTO>? InventoryItems { get; set; } = new List<InventoryItemDTO>();
+        public virtual ICollection<InventoryItemDTO>? InventoryItemsDTO { get; set; } = new List<InventoryItemDTO>();
 
-        public virtual ICollection<LocationDTO>? Locations { get; set; } = new List<LocationDTO>();
+        public virtual ICollection<LocationDTO>? LocationsDTO { get; set; } = new List<LocationDTO>();
     }
 }

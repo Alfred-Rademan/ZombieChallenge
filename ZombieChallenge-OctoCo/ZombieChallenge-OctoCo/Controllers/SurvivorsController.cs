@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using ZombieChallenge_OctoCo.Models;
 using ZombieChallenge_OctoCo.Models.Base;
 using ZombieChallenge_OctoCo.Models.DTO;
+using ZombieChallenge_OctoCo.Services.InventoryItemsService;
+using ZombieChallenge_OctoCo.Services.LocationService;
+using ZombieChallenge_OctoCo.Services.SurvivorService;
 
 namespace ZombieChallenge_OctoCo.Controllers
 {
@@ -18,10 +21,16 @@ namespace ZombieChallenge_OctoCo.Controllers
     {
         private readonly ZombieSurvivorsContext _context;
         private readonly IMapper _mapper;
-        public SurvivorsController(ZombieSurvivorsContext context, IMapper mapper)
+        private readonly ISurvivorService _survivorService;
+        private readonly ILocationService _locationService;
+        private readonly IInventoryService _inventoryService;
+        public SurvivorsController(ZombieSurvivorsContext context, IMapper mapper, ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
         {
             _mapper = mapper;
             _context = context;
+            _survivorService = survivorService;
+            _locationService = locationService;
+            _inventoryService = inventoryService;
         }
 
         // GET: api/Survivors
@@ -87,16 +96,17 @@ namespace ZombieChallenge_OctoCo.Controllers
         // POST: api/Survivors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Survivor>> PostSurvivor(SurvivorDTO survivorDTO)
+        public async Task<ActionResult<Survivor>> AddSurvivor(SurvivorDTO survivorDTO)
         {
-          if (_context.Survivors == null)
-          {
-              return Problem("Entity set 'ZombieSurvivorsContext.Survivors'  is null.");
-          }
           
-            Survivor survivor = _mapper.Map<Survivor>(survivorDTO);
-            //split the object into three objects, survivor, location and inventory items
-            Location insertLocation = survivor.Locations.FirstOrDefault();
+            Survivor? survivor = _survivorService.RegisterSurvivor(survivorDTO).Result;
+            if (survivor == null)
+            {
+                return BadRequest("Survivor could not be created");
+            }
+            
+            LocationDTO? locationDTO = survivorDTO.LocationsDTO.FirstOrDefault();
+            Location? insertLocation = _survivorService.RegisterLocation(locationDTO).Result;
             List<InventoryItem> insertInventoryItems = survivor.InventoryItems.ToList();
           //remove location and inventory items from the request
             survivor.Locations = null;
