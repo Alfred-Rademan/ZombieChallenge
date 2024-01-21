@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZombieChallenge_OctoCo.Models;
 using ZombieChallenge_OctoCo.Models.Base;
+using ZombieChallenge_OctoCo.Models.DTO;
 
 namespace ZombieChallenge_OctoCo.Controllers
 {
@@ -15,9 +17,10 @@ namespace ZombieChallenge_OctoCo.Controllers
     public class SurvivorsController : ControllerBase
     {
         private readonly ZombieSurvivorsContext _context;
-
-        public SurvivorsController(ZombieSurvivorsContext context)
+        private readonly IMapper _mapper;
+        public SurvivorsController(ZombieSurvivorsContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
@@ -84,30 +87,32 @@ namespace ZombieChallenge_OctoCo.Controllers
         // POST: api/Survivors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Survivor>> PostSurvivor(Survivor survivor)
+        public async Task<ActionResult<Survivor>> PostSurvivor(SurvivorDTO survivorDTO)
         {
           if (_context.Survivors == null)
           {
               return Problem("Entity set 'ZombieSurvivorsContext.Survivors'  is null.");
           }
+          
+            Survivor survivor = _mapper.Map<Survivor>(survivorDTO);
             //split the object into three objects, survivor, location and inventory items
-            Survivor insertSurvivor = survivor;
             Location insertLocation = survivor.Locations.FirstOrDefault();
             List<InventoryItem> insertInventoryItems = survivor.InventoryItems.ToList();
-          
           //remove location and inventory items from the request
-            insertSurvivor.Locations = null;
-            insertSurvivor.InventoryItems = null;
+            survivor.Locations = null;
+            survivor.InventoryItems = null;
 
             //add the survivor to the database
-            _context.Survivors.Add(insertSurvivor);
+            _context.Survivors.Add(survivor);
             await _context.SaveChangesAsync();
-
             //add the location to the database
+
+            
             if (insertLocation != null)
             {
-                insertLocation.SurvivorsId = insertSurvivor.Id;
+                insertLocation.SurvivorsId = survivor.Id;
                 _context.Locations.Add(insertLocation);
+                await _context.SaveChangesAsync();
             }
             else
             {
@@ -117,11 +122,13 @@ namespace ZombieChallenge_OctoCo.Controllers
             //add the inventory items to the database
             foreach (var item in insertInventoryItems)
             {
+                
                 //change the survivor id to new id of the saved survivor
-                if (item.SurvivorsId != null)
+                if (item != null)
                 {
-                    item.SurvivorsId = insertSurvivor.Id;
+                    item.SurvivorsId = survivor.Id;
                     _context.InventoryItems.Add(item);
+                    
                 }
                 else
                 {
@@ -129,7 +136,7 @@ namespace ZombieChallenge_OctoCo.Controllers
                 }
                 
             }
-
+            await _context.SaveChangesAsync();
             return CreatedAtAction("GetSurvivor", new { id = survivor.Id }, survivor);
         }
 
