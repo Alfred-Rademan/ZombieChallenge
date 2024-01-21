@@ -7,7 +7,7 @@ namespace ZombieChallenge_OctoCo.Models.Base;
 public partial class InventoryItem
 {
 
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
     [Required]
     public string Item { get; set; } = null!;

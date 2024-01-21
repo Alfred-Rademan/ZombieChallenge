@@ -84,7 +84,7 @@ namespace ZombieChallenge_OctoCo.Controllers
         // POST: api/Survivors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Survivor>> PostSurvivor([Bind("Survivor.CreationBindings")]Survivor survivor)
+        public async Task<ActionResult<Survivor>> PostSurvivor(Survivor survivor)
         {
           if (_context.Survivors == null)
           {

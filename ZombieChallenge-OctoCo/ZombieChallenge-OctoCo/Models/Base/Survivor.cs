@@ -24,5 +24,4 @@ public partial class Survivor
 
     public virtual ICollection<Location>? Locations { get; set; } = new List<Location>();
 
-    public string CreationBindings = "Name,Age,Gender,Locations.Latitude,Location.Longitude,InventoryItems.Item, Inventory.Amount";
 }
