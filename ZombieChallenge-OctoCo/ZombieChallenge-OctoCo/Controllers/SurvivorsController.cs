@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Humanizer;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using ZombieChallenge_OctoCo.Models;
 using ZombieChallenge_OctoCo.Models.Base;
 using ZombieChallenge_OctoCo.Models.DTO;
@@ -20,13 +12,11 @@ namespace ZombieChallenge_OctoCo.Controllers
     [ApiController]
     public class SurvivorsController : ControllerBase
     {
-        private readonly ZombieSurvivorsContext _context;
         private readonly ISurvivorService _survivorService;
         private readonly ILocationService _locationService;
         private readonly IInventoryService _inventoryService;
         public SurvivorsController(ZombieSurvivorsContext context, ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
         {
-            _context = context;
             _survivorService = survivorService;
             _locationService = locationService;
             _inventoryService = inventoryService;
@@ -61,7 +51,7 @@ namespace ZombieChallenge_OctoCo.Controllers
         {
             if (!_survivorService.CheckGender(survivorDTO))
             {
-                return BadRequest("gender must be one of the following [male, female, other]");
+                return BadRequest("Gender must be one of the following [male, female, other]");
             }
           
             Survivor? survivor = await _survivorService.RegisterSurvivor(survivorDTO);
@@ -100,12 +90,19 @@ namespace ZombieChallenge_OctoCo.Controllers
             {
                 return BadRequest("Survivor could not be infected");
             }
-            return survivor;
+            
+            Survivor? infectedSurvivor = await _survivorService.GetSurvivor(id);
+            if (infectedSurvivor == null)
+            {
+                return NotFound();
+            }
+            return infectedSurvivor;
+
         }
 
         [HttpPut]
         [Route("UpdateLocation/{id}")]
-        public async Task<ActionResult<Location>> UpdateLocation(int id, LocationDTO locationDTO)
+        public async Task<ActionResult<Survivor>> UpdateLocation(int id, LocationDTO locationDTO)
         {
             Survivor? survivor = await _survivorService.GetSurvivor(id);
             if (survivor == null)
@@ -117,7 +114,13 @@ namespace ZombieChallenge_OctoCo.Controllers
             {
                 return BadRequest("Location could not be updated");
             }
-            return location;
+
+            Survivor? updatedSurvivor = await _survivorService.GetSurvivor(id);
+            if (updatedSurvivor == null)
+            {
+                return NotFound();
+            }
+            return updatedSurvivor;
         }
 
         
