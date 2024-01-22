@@ -15,7 +15,25 @@ namespace ZombieChallenge_OctoCo.Controllers
         private readonly ISurvivorService _survivorService;
         private readonly ILocationService _locationService;
         private readonly IInventoryService _inventoryService;
-        public SurvivorsController(ZombieSurvivorsContext context, ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
+        /*
+         EXPLINATIONS:
+        - The controller is responsible for receiving the requests and sending the responses. This is the only class that should be aware of the HTTP protocol. And thus it is where 
+          the requests and responses are handled.
+        - The controller should not be aware of the business logic, it should only be aware of the services that are responsible for the business logic.
+        - The controller should not be aware of the database, it should only be aware of the services that are responsible for the database.
+        - The controller only takes in DTOs and returns the full objects. This is to make the schema more sensible to the user.
+
+        THOUGHTS:
+        - All 3 services are injected into this controller and are used to handle the requests and responses. There are 2 alternatives to this. One is to inject the location and 
+          inventory services into the survivor service and use that service to handle all things pertaining to the survivor, location and inventory.
+          I decided against this because I believe that the services should be as small as possible and only handle one thing. This makes the code more readable and easier to maintain.
+          The other feasable option would have been to create seperate controllers for each service. I believe that this is the best option in general, but for this project I decided
+          against it because all actions to be performed are still spesific to the survivor. If there were more actions to be performed on the location and inventory, I would have
+          seperated the services into their own controllers.
+        - Usually I would not return full objects for risk of exposing the underlying database structure but since we are in a zombie apocalypse and the world is ending, I decided
+          to return the full objects to save some time.
+         */
+        public SurvivorsController(ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
         {
             _survivorService = survivorService;
             _locationService = locationService;
