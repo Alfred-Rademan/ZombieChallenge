@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,10 @@ namespace ZombieChallenge_OctoCo.Controllers
         [HttpPost]
         public async Task<ActionResult<Survivor>> AddSurvivor(SurvivorDTO survivorDTO)
         {
+            if (!_survivorService.CheckGender(survivorDTO))
+            {
+                return BadRequest("gender must be one of the following [male, female, other]");
+            }
           
             Survivor? survivor = await _survivorService.RegisterSurvivor(survivorDTO);
             
@@ -82,12 +87,8 @@ namespace ZombieChallenge_OctoCo.Controllers
             {
                 return BadRequest("Inventory items could not be created");
             }
-            Survivor? survivorReturn = await _survivorService.GetSurvivor(survivorID);
-            if (survivorReturn == null)
-            {
-                return BadRequest("Survivor could not be created");
-            }
-            return survivorReturn;
+
+            return CreatedAtAction("GetSurvivor", new { id = survivor.Id }, survivor);
         }
 
         [HttpPut]

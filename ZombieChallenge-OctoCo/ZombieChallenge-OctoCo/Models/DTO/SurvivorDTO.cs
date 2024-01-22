@@ -12,7 +12,7 @@ namespace ZombieChallenge_OctoCo.Models.DTO
         public int Age { get; set; }
 
         [Required]
-        public string? Gender { get; set; }
+        public string Gender { get; set; } = null!;
 
         public virtual ICollection<InventoryItemDTO>? InventoryItemsDTO { get; set; } = new List<InventoryItemDTO>();
         [Required]

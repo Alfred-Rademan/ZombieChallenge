@@ -87,5 +87,11 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
             }
         }
 
+        public bool CheckGender(SurvivorDTO survivorDTO)
+        {
+            List<string> validGenders = new List<string> { "male", "female", "other" };
+            return validGenders.Contains(survivorDTO.Gender);
+        }
+
     }
 }

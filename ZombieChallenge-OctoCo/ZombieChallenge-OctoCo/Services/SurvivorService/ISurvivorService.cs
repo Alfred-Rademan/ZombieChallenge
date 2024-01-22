@@ -9,5 +9,6 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
         public Task<Survivor?> GetSurvivor(int id);
         public Task<List<Survivor>?> GetSurvivors();
         public Task<Survivor?> InfectSurvivor(int id);
+        public bool CheckGender(SurvivorDTO survivorDTO);
     }
 }
