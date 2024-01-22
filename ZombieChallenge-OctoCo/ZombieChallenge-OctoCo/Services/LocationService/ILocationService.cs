@@ -5,6 +5,8 @@ namespace ZombieChallenge_OctoCo.Services.LocationService
 {
     public interface ILocationService
     {
-        public Task<Location?> RegisterLocation(LocationDTO locationDTO);
+        public Task<Location?> RegisterLocation(LocationDTO locationDTO, int survivorID);
+        public Task<Location?> UpdateLocation(LocationDTO locationDTO, int survivorID);
+
     }
 }

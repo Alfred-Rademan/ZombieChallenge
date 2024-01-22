@@ -20,40 +20,32 @@ namespace ZombieChallenge_OctoCo.Controllers
     public class SurvivorsController : ControllerBase
     {
         private readonly ZombieSurvivorsContext _context;
-        private readonly IMapper _mapper;
         private readonly ISurvivorService _survivorService;
         private readonly ILocationService _locationService;
         private readonly IInventoryService _inventoryService;
-        public SurvivorsController(ZombieSurvivorsContext context, IMapper mapper, ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
+        public SurvivorsController(ZombieSurvivorsContext context, ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
         {
-            _mapper = mapper;
             _context = context;
             _survivorService = survivorService;
             _locationService = locationService;
             _inventoryService = inventoryService;
         }
 
-        // GET: api/Survivors
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Survivor>>> GetSurvivors()
         {
-          if (_context.Survivors == null)
-          {
-              return NotFound();
-          }
-            return await _context.Survivors.ToListAsync();
+          List<Survivor>? survivors = await _survivorService.GetSurvivors();
+            if (survivors == null)
+            {
+                return NotFound();
+            }
+            return survivors;
         }
 
-        // GET: api/Survivors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Survivor>> GetSurvivor(int id)
         {
-          if (_context.Survivors == null)
-          {
-              return NotFound();
-          }
-            var survivor = await _context.Survivors.FindAsync(id);
-
+          Survivor? survivor = await _survivorService.GetSurvivor(id);
             if (survivor == null)
             {
                 return NotFound();
@@ -62,117 +54,71 @@ namespace ZombieChallenge_OctoCo.Controllers
             return survivor;
         }
 
-        // PUT: api/Survivors/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutSurvivor(int id, Survivor survivor)
-        {
-            if (id != survivor.Id)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(survivor).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SurvivorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Survivors
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Survivor>> AddSurvivor(SurvivorDTO survivorDTO)
         {
           
-            Survivor? survivor = _survivorService.RegisterSurvivor(survivorDTO).Result;
+            Survivor? survivor = await _survivorService.RegisterSurvivor(survivorDTO);
+            
             if (survivor == null)
             {
                 return BadRequest("Survivor could not be created");
             }
             
-            LocationDTO? locationDTO = survivorDTO.LocationsDTO.FirstOrDefault();
-            Location? insertLocation = _survivorService.RegisterLocation(locationDTO).Result;
-            List<InventoryItem> insertInventoryItems = survivor.InventoryItems.ToList();
-          //remove location and inventory items from the request
-            survivor.Locations = null;
-            survivor.InventoryItems = null;
+            int survivorID = survivor.Id;
 
-            //add the survivor to the database
-            _context.Survivors.Add(survivor);
-            await _context.SaveChangesAsync();
-            //add the location to the database
+            LocationDTO? locationDTO = survivorDTO.LocationsDTO;
+            Location? insertLocation = await _locationService.RegisterLocation(locationDTO, survivorID);
 
-            
-            if (insertLocation != null)
+            if (insertLocation == null)
             {
-                insertLocation.SurvivorsId = survivor.Id;
-                _context.Locations.Add(insertLocation);
-                await _context.SaveChangesAsync();
+                return BadRequest("Location could not be created");
             }
-            else
+            List<InventoryItemDTO>? inventoryItemDTOs = survivorDTO.InventoryItemsDTO.ToList();
+            List<InventoryItem>? insertInventoryItems = await _inventoryService.RegisterItems(inventoryItemDTOs, survivorID);
+
+            if (insertInventoryItems == null)
             {
-                return BadRequest("Survivor does not have a location");
+                return BadRequest("Inventory items could not be created");
             }
-            
-            //add the inventory items to the database
-            foreach (var item in insertInventoryItems)
+            Survivor? survivorReturn = await _survivorService.GetSurvivor(survivorID);
+            if (survivorReturn == null)
             {
-                
-                //change the survivor id to new id of the saved survivor
-                if (item != null)
-                {
-                    item.SurvivorsId = survivor.Id;
-                    _context.InventoryItems.Add(item);
-                    
-                }
-                else
-                {
-                    return BadRequest("Inventory item does not have a survivor id");
-                }
-                
+                return BadRequest("Survivor could not be created");
             }
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetSurvivor", new { id = survivor.Id }, survivor);
+            return survivorReturn;
         }
 
-        // DELETE: api/Survivors/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSurvivor(int id)
+        [HttpPut]
+        [Route("Infect/{id}")]
+        public async Task<ActionResult<Survivor>> InfectSurvivor(int id)
         {
-            if (_context.Survivors == null)
+            Survivor? survivor = await _survivorService.InfectSurvivor(id);
+            if (survivor == null)
             {
-                return NotFound();
+                return BadRequest("Survivor could not be infected");
             }
-            var survivor = await _context.Survivors.FindAsync(id);
+            return survivor;
+        }
+
+        [HttpPut]
+        [Route("UpdateLocation/{id}")]
+        public async Task<ActionResult<Location>> UpdateLocation(int id, LocationDTO locationDTO)
+        {
+            Survivor? survivor = await _survivorService.GetSurvivor(id);
             if (survivor == null)
             {
                 return NotFound();
             }
-
-            _context.Survivors.Remove(survivor);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            Location? location = await _locationService.UpdateLocation(locationDTO, id);
+            if (location == null)
+            {
+                return BadRequest("Location could not be updated");
+            }
+            return location;
         }
 
-        private bool SurvivorExists(int id)
-        {
-            return (_context.Survivors?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        
     }
 }

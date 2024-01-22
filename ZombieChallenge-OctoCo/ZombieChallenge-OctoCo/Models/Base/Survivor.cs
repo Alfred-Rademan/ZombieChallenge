@@ -22,6 +22,7 @@ public partial class Survivor
     [Required]
     public string? Gender { get; set; }
 
+    public bool Infected { get; set; } = false;
     public virtual ICollection<InventoryItem>? InventoryItems { get; set; } = new List<InventoryItem>();
 
     public virtual ICollection<Location>? Locations { get; set; } = new List<Location>();

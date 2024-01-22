@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZombieChallenge_OctoCo.Models;
 using ZombieChallenge_OctoCo.Models.Base;
@@ -43,7 +44,7 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
         {
             try
             {
-                Survivor? survivor = await _context.Survivors.FindAsync(id);
+                Survivor? survivor = await _context.Survivors.Include(s => s.InventoryItems).Include(s => s.Locations).FirstOrDefaultAsync(s => s.Id == id);
                 return survivor;
             }
             catch (Exception e)
@@ -56,8 +57,29 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
         {
             try
             {
-                List<Survivor> survivors = await _context.Survivors.ToListAsync();
-                return survivors;
+               // Get survivors from database in a list in alphabetical order
+               List<Survivor>? survivors = await _context.Survivors.ToListAsync();
+               survivors.Sort((x, y) => string.Compare(x.Name, y.Name));
+               return survivors;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public async Task<Survivor?> InfectSurvivor(int id)
+        {
+            try
+            {
+                Survivor? survivor = await _context.Survivors.FindAsync(id);
+                if (survivor == null || survivor.Infected == true)
+                {
+                    return null;
+                }
+                survivor.Infected = true;
+                await _context.SaveChangesAsync();
+                return survivor;
             }
             catch (Exception e)
             {

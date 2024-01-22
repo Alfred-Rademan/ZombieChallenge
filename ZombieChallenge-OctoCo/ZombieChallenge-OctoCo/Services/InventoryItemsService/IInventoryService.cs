@@ -5,6 +5,6 @@ namespace ZombieChallenge_OctoCo.Services.InventoryItemsService
 {
     public interface IInventoryService
     {
-        public Task<List<InventoryItem>?> registerItems(List<InventoryItemDTO> inventoryItemDTOs);
+        public Task<List<InventoryItem>?> RegisterItems(List<InventoryItemDTO> inventoryItemDTOs, int survivorID);
     }
 }
