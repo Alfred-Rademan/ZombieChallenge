@@ -17,21 +17,23 @@ namespace ZombieChallenge_OctoCo.Controllers
         private readonly IInventoryService _inventoryService;
         /*
          EXPLINATIONS:
-        - The controller is responsible for receiving the requests and sending the responses. This is the only class that should be aware of the HTTP protocol. And thus it is where 
+        - The controller is responsible for receiving the requests and sending the responses. This is the only class that should be aware of any HTTP. And thus it is where 
           the requests and responses are handled.
         - The controller should not be aware of the business logic, it should only be aware of the services that are responsible for the business logic.
         - The controller should not be aware of the database, it should only be aware of the services that are responsible for the database.
         - The controller only takes in DTOs and returns the full objects. This is to make the schema more sensible to the user.
+        - Interfaces are used to make the code more testable and to make it easier to change the implementation of the services if needed.
 
         THOUGHTS:
         - All 3 services are injected into this controller and are used to handle the requests and responses. There are 2 alternatives to this. One is to inject the location and 
           inventory services into the survivor service and use that service to handle all things pertaining to the survivor, location and inventory.
           I decided against this because I believe that the services should be as small as possible and only handle one thing. This makes the code more readable and easier to maintain.
           The other feasable option would have been to create seperate controllers for each service. I believe that this is the best option in general, but for this project I decided
-          against it because all actions to be performed are still spesific to the survivor. If there were more actions to be performed on the location and inventory, I would have
+          against it because all actions to be performed are still spesific to the survivor. If there were more actions to be performed on the location and inventory outside of the survivor, I would have
           seperated the services into their own controllers.
         - Usually I would not return full objects for risk of exposing the underlying database structure but since we are in a zombie apocalypse and the world is ending, I decided
           to return the full objects to save some time.
+        - I decided to use DTO's instead of just using bind because it shows up better in the OpenAPI documentation and it is easier to read and enter when using the try me feature.
          */
         public SurvivorsController(ISurvivorService survivorService, ILocationService locationService, IInventoryService inventoryService)
         {
@@ -40,6 +42,7 @@ namespace ZombieChallenge_OctoCo.Controllers
             _inventoryService = inventoryService;
         }
 
+        // Get all survivors in alphabetical order
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Survivor>>> GetSurvivors()
         {
@@ -51,6 +54,7 @@ namespace ZombieChallenge_OctoCo.Controllers
             return survivors;
         }
 
+        // Get a specific survivor
         [HttpGet("{id}")]
         public async Task<ActionResult<Survivor>> GetSurvivor(int id)
         {
@@ -63,10 +67,11 @@ namespace ZombieChallenge_OctoCo.Controllers
             return survivor;
         }
 
-
+        // Create a new survivor
         [HttpPost]
         public async Task<ActionResult<Survivor>> AddSurvivor(SurvivorDTO survivorDTO)
         {
+
             if (!_survivorService.CheckGender(survivorDTO))
             {
                 return BadRequest("Gender must be one of the following [male, female, other]");
@@ -99,6 +104,7 @@ namespace ZombieChallenge_OctoCo.Controllers
             return CreatedAtAction("GetSurvivor", new { id = survivor.Id }, survivor);
         }
 
+        // Infect a survivor
         [HttpPut]
         [Route("Infect/{id}")]
         public async Task<ActionResult<Survivor>> InfectSurvivor(int id)
@@ -118,6 +124,7 @@ namespace ZombieChallenge_OctoCo.Controllers
 
         }
 
+        // Update a survivor's location
         [HttpPut]
         [Route("UpdateLocation/{id}")]
         public async Task<ActionResult<Survivor>> UpdateLocation(int id, LocationDTO locationDTO)

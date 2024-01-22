@@ -17,6 +17,7 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
             _mapper = mapper;
         }
 
+        // Create a new survivor
         public async Task<Survivor?> RegisterSurvivor(SurvivorDTO survivorDTO)
         {
             try
@@ -40,6 +41,7 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
 
         }
 
+        // Get a survivor by id
         public async Task<Survivor?> GetSurvivor(int id)
         {
             try
@@ -53,6 +55,7 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
             }
         }
 
+        // Get all survivors in alphabetical order
         public async Task<List<Survivor>?> GetSurvivors()
         {
             try
@@ -68,6 +71,7 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
             }
         }
 
+        // Infect a survivor
         public async Task<Survivor?> InfectSurvivor(int id)
         {
             try
@@ -87,6 +91,7 @@ namespace ZombieChallenge_OctoCo.Services.SurvivorService
             }
         }
 
+        // Check that the gender field is correct
         public bool CheckGender(SurvivorDTO survivorDTO)
         {
             List<string> validGenders = new List<string> { "male", "female", "other" };

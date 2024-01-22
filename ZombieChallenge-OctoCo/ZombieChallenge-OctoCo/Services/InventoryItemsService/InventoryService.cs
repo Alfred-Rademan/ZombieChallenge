@@ -16,6 +16,7 @@ namespace ZombieChallenge_OctoCo.Services.InventoryItemsService
             _mapper = mapper;
         }
 
+        // Create a new inventory items set for a survivor
         public async Task<List<InventoryItem>?> RegisterItems(List<InventoryItemDTO> inventoryItemDTOs, int survivorID)
         {
             try

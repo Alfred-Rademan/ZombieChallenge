@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using ZombieChallenge_OctoCo.Models;
 using ZombieChallenge_OctoCo.Services.InventoryItemsService;
@@ -15,7 +16,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddDbContext<ZombieSurvivorsContext>();
+builder.Services.AddDbContext<ZombieSurvivorsContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 33))));
 builder.Services.AddScoped<ISurvivorService, SurvivorService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();

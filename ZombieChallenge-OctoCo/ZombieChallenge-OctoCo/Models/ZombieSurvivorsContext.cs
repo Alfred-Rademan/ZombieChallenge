@@ -7,6 +7,20 @@ namespace ZombieChallenge_OctoCo.Models;
 
 public partial class ZombieSurvivorsContext : DbContext
 {
+
+    /*
+     EXPLINATIONS:
+    -This is the context class, it is the class that will be used to interact with the database.
+    -It maps the classes to the database tables.
+    -It uses the Entity Framework Core to do this.
+    -The models are located in the Models/Base folder. They are partial classes, so they can be extended in the Models folder.
+
+    THOUGHTS:
+    -The connection string is located in the appsettings.json file. But if this where a real project, I would use the user secrets to store the connection string.
+    - In hindsight this project would have been complete quicker if I had used MongoDB instead of MySQL. This is becase of how the data is structured. Obviously nothing wrong with 
+      the MySQL implimentation. But for prototyping purposes, it would have been quicker
+     */
+
     public ZombieSurvivorsContext()
     {
     }
@@ -21,10 +35,6 @@ public partial class ZombieSurvivorsContext : DbContext
     public virtual DbSet<Location> Locations { get; set; }
 
     public virtual DbSet<Survivor> Survivors { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySql("server=localhost;port=3306;database=zombie_survivors;user=root;password=RedRedRed9#", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.33-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
